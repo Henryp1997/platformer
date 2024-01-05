@@ -8,8 +8,8 @@ class player():
         self.y = 200
         self.height = 30
         self.width = 30
-        self.speed = 10
-        self.gravity = 5
+        self.speed = 6
+        self.yspeed = 5
         self.rect = pg.Rect(self.x, self.y, self.width, self.height)
 
     def move(self, all_platforms):
@@ -20,26 +20,31 @@ class player():
         if key[pg.K_RIGHT]:
             self.rect.move_ip(self.speed, 1)
             self.x += self.speed
-        
+
+        not_on_count = 0
         for platform_obj in all_platforms:
             player_below_platform = self.y + self.height > platform_obj.y
-            player_about_to_land = self.y + self.height + self.gravity >= platform_obj.y
+            player_about_to_land = self.y + self.height + self.yspeed >= platform_obj.y
             player_at_right_edge = self.x > platform_obj.x + platform_obj.width
             player_at_left_edge = self.x + self.width < platform_obj.x
 
             # start falling if not on platform
             if player_at_right_edge or player_at_left_edge:
-                self.gravity = 5
+                not_on_count += 1
 
             # player on platform
-            if self.gravity == 0:
+            if self.yspeed == 0:
                 # snap player to platform
                 self.y = platform_obj.y - self.height
             
-            self.y += self.gravity
             if player_about_to_land and not player_below_platform:
                 # if the player is going to be inside the platform on the next frame
-                self.gravity = 0
+                self.yspeed = 0
+
+        if not_on_count == len(all_platforms):
+            self.yspeed = 5
+    
+        self.y += self.yspeed
 
         self.draw_rect()
 

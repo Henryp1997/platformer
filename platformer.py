@@ -5,7 +5,7 @@ from variables import *
 from objects import *
 
 player_ = player()
-all_platforms = [platform(80, 350, 100, 20)]
+all_platforms = [platform(80, 350, 100, 20), platform(200, 350, 100, 20), platform(340, 350, 100, 20)]
 frame_count = 0
 frame_counts = [0, 60]
 jumping = False
@@ -17,10 +17,11 @@ def main():
         clock.tick(60)
         screen.fill(colours['BLACK'])
         pg.draw.rect(screen, colours['GREY1'], pg.Rect((0,0), (screen_x, screen_y)), width=5)
-        player_.move(all_platforms)
 
         for platform_obj in all_platforms:
             platform_obj.draw_rect()
+
+        player_.move(all_platforms)
 
         # player_.check_collisions(platform_)
         # player_.jump(platform_) 
