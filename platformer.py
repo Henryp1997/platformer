@@ -20,8 +20,8 @@ def main():
 
         for platform_obj in all_platforms:
             platform_obj.draw_rect()
-
-        player_.move(all_platforms)
+        player_.check_platform_collide(all_platforms)
+        # print(player_.state)
 
         # player_.check_collisions(platform_)
         # player_.jump(platform_) 

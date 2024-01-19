@@ -10,9 +10,10 @@ class player():
         self.width = 30
         self.speed = 6
         self.yspeed = 5
+        self.state = 0 # 0 = falling, 1 = on platform, 2 = jumping
         self.rect = pg.Rect(self.x, self.y, self.width, self.height)
 
-    def move(self, all_platforms):
+    def check_platform_collide(self, all_platforms):
         key = pg.key.get_pressed()
         if key[pg.K_LEFT]:
             self.rect.move_ip(self.speed, 0)
