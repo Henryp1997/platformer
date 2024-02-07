@@ -1,4 +1,5 @@
 import pygame as pg
+import os
 
 colours = {
     'BLUE': (0, 100, 200),
@@ -18,6 +19,8 @@ colours = {
 screen_x = 850
 screen_y = 765
 screen = pg.display.set_mode((screen_x,screen_y))
+
+assets_path = f'{os.path.dirname(os.path.abspath(__file__))}/assets'
 
 pg.init()
 pg.display.set_caption("Platformer")

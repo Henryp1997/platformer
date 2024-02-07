@@ -6,12 +6,15 @@ class player():
     def __init__(self):
         self.x = 100
         self.y = 200
-        self.height = 30
-        self.width = 30
+        # self.height = 30
+        # self.width = 30
+        self.width = 32
+        self.height = 64
         self.speed = 6
         self.yspeed = 5
         self.state = 0 # 0 = falling, 1 = on platform, 2 = jumping
         self.rect = pg.Rect(self.x, self.y, self.width, self.height)
+        self.image = pg.image.load(f'{assets_path}/manic_miner.png').convert_alpha()
 
     def check_platform_collide(self, all_platforms):
         key = pg.key.get_pressed()
@@ -86,7 +89,8 @@ class player():
 
     
     def draw_rect(self):
-        pg.draw.rect(screen, colours['RED'], pg.Rect((self.x, self.y), (self.width, self.height)))
+        # pg.draw.rect(screen, colours['RED'], pg.Rect((self.x, self.y), (self.width, self.height)))
+        screen.blit(self.image, (self.x, self.y))
 
 class platform():
     def __init__(self,x,y,width,height):
