@@ -1,8 +1,7 @@
 import pygame as pg
 from variables import *
 
-jumping = False
-class player():
+class movable_character():
     def __init__(self):
         self.x = 100
         self.y = 200
@@ -12,11 +11,17 @@ class player():
         self.height = 64
         self.speed = 6
         self.yspeed = 5
-        self.state = 0 # 0 = falling, 1 = on platform, 2 = jumping
+        self.yaccel = 0.1
+
+        # 0 = falling, 1 = on ground, 2 = jumping
+        self.state = 0
+
+        self.time = 0
+
         self.rect = pg.Rect(self.x, self.y, self.width, self.height)
         self.image = pg.image.load(f'{assets_path}/manic_miner.png').convert_alpha()
 
-    def check_platform_collide(self, all_platforms):
+    def move(self):
         key = pg.key.get_pressed()
         if key[pg.K_LEFT]:
             self.rect.move_ip(self.speed, 0)
@@ -24,33 +29,47 @@ class player():
         if key[pg.K_RIGHT]:
             self.rect.move_ip(self.speed, 1)
             self.x += self.speed
+    
+    # def jump(self, frame_count):
+    #     key = pg.key.get_pressed()
+    #     if key[pg.K_SPACE]:
 
+
+    def check_platform_collide(self, all_platforms):
+        state = 0
         not_on_count = 0
         for platform_obj in all_platforms:
-            player_below_platform = self.y + self.height > platform_obj.y
-            player_about_to_land = self.y + self.height + self.yspeed >= platform_obj.y
             player_at_right_edge = self.x > platform_obj.x + platform_obj.width
             player_at_left_edge = self.x + self.width < platform_obj.x
 
-            # start falling if not on platform
+            # start falling if not on platform. Check if x value matches first and skip over for performance
             if player_at_right_edge or player_at_left_edge:
                 not_on_count += 1
+                continue
+                
+            player_below_platform = self.y + self.height > platform_obj.y
+            player_about_to_land = self.y + self.height + self.yspeed >= platform_obj.y
 
-            # player on platform
-            if self.yspeed == 0:
-                # snap player to platform
-                self.y = platform_obj.y - self.height
-            
             if player_about_to_land and not player_below_platform:
                 # if the player is going to be inside the platform on the next frame
                 self.yspeed = 0
 
+                # snap player to platform
+                self.y = platform_obj.y - self.height
+                state = 0
+                break
+
         if not_on_count == len(all_platforms):
             self.yspeed = 5
     
-        self.y += self.yspeed
-
+        self.state = state
         self.draw_rect()
+
+        return
+
+    def move_up_down(self, frames):
+        time_passed = frames[1] - frames[0]
+        self.y += self.yspeed
 
     # def jump(self, platform_obj):
     #     key = pg.key.get_pressed()
@@ -70,23 +89,6 @@ class player():
     #         if on_platform:
     #             start_jump = False
     #         self.draw_rect()
-        
-    # def check_collisions(self, platform_obj):
-        # on_platform = False
-        # if pg.Rect(self.x, self.y, self.width, self.height).colliderect(pg.Rect(platform_obj.x, platform_obj.y, platform_obj.width, platform_obj.height)):
-        #     print("yes")
-        # if (self.y + self.height == platform_obj.y) and (platform_obj.x <= self.x + self.width and self.x <= platform_obj.x + platform_obj.width):
-        #     on_platform = True
-        # if round(self.y + self.height) > screen_y - 10:
-        #     on_platform = True
-        # if not on_platform:
-        #     self.y += 10
-        # return on_platform
-
-
-        # check whether the player is going to be inside the platform on the next frame. If so, register a collision
-
-
     
     def draw_rect(self):
         # pg.draw.rect(screen, colours['RED'], pg.Rect((self.x, self.y), (self.width, self.height)))
