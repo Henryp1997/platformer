@@ -16,8 +16,8 @@ colours = {
     'ORANGE': '#f5a742',
     'ELEC_BLUE': '#59CBE8'
 }
-screen_x = 850
-screen_y = 765
+screen_x = 970
+screen_y = 730
 screen = pg.display.set_mode((screen_x,screen_y))
 
 assets_path = f'{os.path.dirname(os.path.abspath(__file__))}/assets'

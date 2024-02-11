@@ -38,18 +38,30 @@ class movable_character():
     def check_platform_collide(self, all_platforms):
         state = 0
         not_on_count = 0
-        for platform_obj in all_platforms:
+        for platform_obj in all_platforms:     
+             
+            # start falling if not on platform. Check individually for performance
             player_at_right_edge = self.x > platform_obj.x + platform_obj.width
-            player_at_left_edge = self.x + self.width < platform_obj.x
+            if player_at_right_edge:
+                not_on_count += 1
+                continue
 
-            # start falling if not on platform. Check if x value matches first and skip over for performance
-            if player_at_right_edge or player_at_left_edge:
+            player_at_left_edge = self.x + self.width < platform_obj.x
+            if player_at_left_edge:
                 not_on_count += 1
                 continue
                 
             player_below_platform = self.y + self.height > platform_obj.y
-            player_about_to_land = self.y + self.height + self.yspeed >= platform_obj.y
+            if player_below_platform:
+                not_on_count += 1
+                continue
 
+            player_about_to_land = self.y + self.height + self.yspeed >= platform_obj.y
+            if not player_about_to_land:
+                not_on_count += 1
+                continue
+
+            # if player is about to land on the current platform
             if player_about_to_land and not player_below_platform:
                 # if the player is going to be inside the platform on the next frame
                 self.yspeed = 0
