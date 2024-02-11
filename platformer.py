@@ -5,10 +5,18 @@ from variables import *
 from objects import *
 
 player = movable_character()
-all_platforms = [platform(80, 350, 100, 20), platform(200, 350, 100, 20), platform(337, 550, 100, 20)]
+# all_platforms = [platform(5, 350, 840, 20), platform(337, 550, 100, 20)]
 frame_count = 0
 frame_counts = [0, 60]
 jumping = False
+
+def grid_platform(x, y, length, height):
+    if x > 47 or y > 35 or x + length > 48 or y + height > 36:
+        print("platform out of bounds")
+        sys.exit()
+    return platform(5 + (x * 20), 5 + (y * 20), length * 20, height * 20)
+
+all_platforms = [grid_platform(0, 35, 48, 1), grid_platform(5, 15, 10, 1), grid_platform(20, 25, 10, 1)]
 
 def main():
     # game code
