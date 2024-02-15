@@ -16,12 +16,20 @@ def grid_platform(x, y, length, height):
         sys.exit()
     return platform(5 + (x * 20), 5 + (y * 20), length * 20, height * 20)
 
-all_platforms = [grid_platform(0, 35, 48, 1), grid_platform(5, 15, 10, 1), grid_platform(20, 25, 10, 1)]
+all_platforms = [
+    grid_platform(0, 35, 48, 1),
+    grid_platform(5, 15, 10, 1),
+    grid_platform(20, 10, 10, 1),
+    grid_platform(20, 25, 10, 1),
+    grid_platform(30, 30, 5, 1),
+    grid_platform(40, 22, 7, 1),
+    grid_platform(25, 17, 15, 1),
+    grid_platform(7, 5, 3, 1)
+]
+# all_platforms = [grid_platform(0, 35, 48, 1), grid_platform(20, 25, 10, 1)]
 
 def main():
     # game code
-    frame_count = 0
-    frames = [0, 0]
     while True:
         clock = pg.time.Clock()
         clock.tick(60)
@@ -32,23 +40,16 @@ def main():
             platform_obj.draw_rect()
 
         player.move()
-        player.move_up_down(frames)
+        player.move_up_down()
+        player.check_wall_collide()
         player.check_platform_collide(all_platforms)
-
-        # only check jumps if player is on the ground
-        # if player.on_ground:
-        #     player.jump()
-
-        # print(player_.state)
-
-        # player_.check_collisions(platform_)
-        # player_.jump(platform_) 
+        player.jump()
+        player.draw_rect()
 
         pg.display.update()
 
         # update value of last frame so can keep track of time
-        frame_count += 1
-        frames[1] = frame_count
+        player.update_time()
 
         for event in pg.event.get():
             if event.type == QUIT:

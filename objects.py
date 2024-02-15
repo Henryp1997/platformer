@@ -4,19 +4,21 @@ from variables import *
 class movable_character():
     def __init__(self):
         self.x = 100
-        self.y = 200
+        self.y = 641
         # self.height = 30
         # self.width = 30
         self.width = 32
         self.height = 64
         self.speed = 6
         self.yspeed = 5
-        self.yaccel = 0.1
+        self.yaccel = 0
+        self.speeds = [5, 0, -5]
+        self.accels = [0.2, 0, -0.2]
 
         # 0 = falling, 1 = on ground, 2 = jumping
-        self.state = 0
+        self.state = 1
 
-        self.time = 0
+        self.time = [0, 0]
 
         self.rect = pg.Rect(self.x, self.y, self.width, self.height)
         self.image = pg.image.load(f'{assets_path}/manic_miner.png').convert_alpha()
@@ -30,13 +32,29 @@ class movable_character():
             self.rect.move_ip(self.speed, 1)
             self.x += self.speed
     
-    # def jump(self, frame_count):
-    #     key = pg.key.get_pressed()
-    #     if key[pg.K_SPACE]:
+    def jump(self):
+        if self.state == 1: # on platform
+            key = pg.key.get_pressed()
+            if key[pg.K_SPACE]:
+                self.jumped_pos = self.y
+                self.state = 2
+        elif self.state == 2: # currently jumping
+            if self.y < self.jumped_pos - self.height*2:
+                self.state = 0
+                self.jumped_pos = 0
+                self.time = [0, 0]
 
+    def check_wall_collide(self):
+        hit_right_wall = self.x + self.width >= screen_x - 5
+        if hit_right_wall:
+            self.x = screen_x - 5 - self.width
+            return
+        hit_left_wall = self.x <= 5
+        if hit_left_wall:
+            self.x = 5
+            return
 
     def check_platform_collide(self, all_platforms):
-        state = 0
         not_on_count = 0
         for platform_obj in all_platforms:     
              
@@ -63,24 +81,24 @@ class movable_character():
 
             # if player is about to land on the current platform
             if player_about_to_land and not player_below_platform:
-                # if the player is going to be inside the platform on the next frame
-                self.yspeed = 0
-
                 # snap player to platform
                 self.y = platform_obj.y - self.height
-                state = 0
+                self.state = 1
                 break
 
-        if not_on_count == len(all_platforms):
-            self.yspeed = 5
-    
-        self.state = state
-        self.draw_rect()
+        if not_on_count == len(all_platforms) and self.state != 2:
+            self.state = 0
 
         return
 
-    def move_up_down(self, frames):
-        time_passed = frames[1] - frames[0]
+    # def move_up_down(self):
+    #     time_passed = self.time[1] - self.time[0]
+    #     self.yaccel = self.accels[self.state]
+    #     self.yspeed = time_passed * self.yaccel
+    #     self.y += self.yspeed
+
+    def move_up_down(self):
+        self.yspeed = self.speeds[self.state]
         self.y += self.yspeed
 
     # def jump(self, platform_obj):
@@ -102,6 +120,12 @@ class movable_character():
     #             start_jump = False
     #         self.draw_rect()
     
+    def update_time(self):
+        self.time[1] += 1
+        if self.state == 1:
+            # reset time calculations if not falling or jumping
+            self.time = [0, 0]
+
     def draw_rect(self):
         # pg.draw.rect(screen, colours['RED'], pg.Rect((self.x, self.y), (self.width, self.height)))
         screen.blit(self.image, (self.x, self.y))
